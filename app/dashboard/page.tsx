@@ -140,14 +140,14 @@ export default function Dashboard() {
           className="absolute inset-0"
         >
           <motion.div
-            style={{ scale }}
+            style={{ 
+              scale, 
+              backgroundImage: `url(${TRENDING_CONTENT[0].image})` 
+            }}
             className="absolute inset-0 bg-cover bg-center"
             initial={{ scale: 1.2 }}
             animate={{ scale: 1 }}
             transition={{ duration: 10 }}
-            style={{
-              backgroundImage: `url(${TRENDING_CONTENT[0].image})`,
-            }}
           >
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
           </motion.div>
