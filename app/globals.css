@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 1.2%;
+    
+    --secondary: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+    
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+    
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+    
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --ring: 216 34% 17%;
+    
+    --radius: 0.5rem;
+
+    /* Custom Colors */
+    --neon-blue: 214 100% 50%;
+    --plasma-purple: 267 100% 50%;
+    --mint-green: 160 100% 50%;
+    
+    /* Ambient Light Colors */
+    --ambient-primary: var(--neon-blue);
+    --ambient-secondary: var(--plasma-purple);
+    --ambient-accent: var(--mint-green);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+.glow-effect {
+  position: relative;
+}
+
+.glow-effect::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    45deg,
+    hsl(var(--neon-blue)),
+    hsl(var(--plasma-purple)),
+    hsl(var(--mint-green))
+  );
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.glow-effect:hover::before {
+  opacity: 1;
+}
+
+.ambient-light {
+  position: relative;
+}
+
+.ambient-light::after {
+  content: '';
+  position: absolute;
+  inset: -50px;
+  background: radial-gradient(
+    circle at center,
+    hsl(var(--ambient-primary) / 0.15),
+    transparent 70%
+  );
+  z-index: -1;
+  filter: blur(30px);
+}
+
+/* Glass Effect */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Animated Background */
+.animated-bg {
+  background: linear-gradient(
+    45deg,
+    hsl(var(--neon-blue) / 0.1),
+    hsl(var(--plasma-purple) / 0.1),
+    hsl(var(--mint-green) / 0.1)
+  );
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
