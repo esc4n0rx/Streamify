@@ -6,18 +6,24 @@ import { Button } from "@/components/ui/button";
 import {
   Search,
   Bell,
-  User,
+  User as UserIcon,
   ChevronDown,
   Film,
   Tv,
   Trophy,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfilePopupOpen, setIsProfilePopupOpen] = useState(false);
+  const [user, setUser] = useState<{ nome: string; url_avatar: string } | null>(
+    null
+  );
+  const router = useRouter();
+  const baseUrl = "https://api.streamhivex.icu";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +32,28 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Recupera os dados do usuário do localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  // Gera a URL completa do avatar
+  const avatarUrl =
+    user && user.url_avatar
+      ? user.url_avatar.startsWith("http")
+        ? user.url_avatar
+        : `${baseUrl}/${user.url_avatar.replace(/^\//, "")}`
+      : "";
+
+  const handleSair = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    router.push("/");
+  };
 
   return (
     <motion.nav
@@ -87,11 +115,21 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 onClick={() => setIsProfilePopupOpen((prev) => !prev)}
-                className="hover:bg-white/10"
+                className="hover:bg-white/10 flex items-center gap-2"
               >
-                <User className="w-5 h-5 mr-2" />
-                <span className="hidden sm:inline">Perfil</span>
-                <ChevronDown className="w-4 h-4 ml-2" />
+                {user && avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt={user.nome}
+                    className="w-5 h-5 rounded-full object-cover"
+                  />
+                ) : (
+                  <UserIcon className="w-5 h-5" />
+                )}
+                <span className="hidden sm:inline">
+                  {user ? user.nome : "Perfil"}
+                </span>
+                <ChevronDown className="w-4 h-4" />
               </Button>
               <AnimatePresence>
                 {isProfilePopupOpen && (
@@ -102,17 +140,19 @@ export function Navbar() {
                     transition={{ duration: 0.2 }}
                     className="absolute right-0 mt-2 w-48 bg-background p-4 rounded shadow-lg z-50"
                   >
-                    <p className="text-sm text-gray-200">Usuário Exemplo</p>
+                    <p className="text-sm text-gray-200">
+                      {user ? user.nome : "Usuário"}
+                    </p>
                     <Link
-                      href="/perfil"
+                      href="/account"
                       className="block text-sm mt-2 hover:underline"
+                      onClick={() => setIsProfilePopupOpen(false)}
                     >
-                      Ajustes do Perfil
+                      Minha Conta
                     </Link>
                     <button
                       className="text-sm mt-2 hover:underline"
-                      onClick={() => {
-                      }}
+                      onClick={handleSair}
                     >
                       Sair
                     </button>

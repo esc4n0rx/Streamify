@@ -11,19 +11,72 @@ import { Mail, Lock, User } from "lucide-react";
 export function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [nome, setNome] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
   const router = useRouter();
+  const baseUrl = "https://api.streamhivex.icu";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simula chamada à API
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
+      const payload = isLogin ? { email, senha } : { nome, email, senha };
 
-    toast.success(isLogin ? "Bem-vindo de volta!" : "Conta criada com sucesso!");
+      const res = await fetch(`${baseUrl}${endpoint}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "Erro ao autenticar");
+        setLoading(false);
+        return;
+      }
+
+      if (isLogin) {
+        // Armazena token e informações do usuário no localStorage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        toast.success("Bem-vindo de volta!");
+        onClose();
+        router.push("/dashboard");
+      } else {
+        // Registro: exibe sucesso e realiza login automático
+        toast.success("Conta criada com sucesso!");
+
+        // Chama login automaticamente após o registro
+        const loginRes = await fetch(`${baseUrl}/api/auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, senha }),
+        });
+
+        const loginData = await loginRes.json();
+
+        if (loginRes.ok) {
+          localStorage.setItem("token", loginData.token);
+          localStorage.setItem("user", JSON.stringify(loginData.user));
+          onClose();
+          router.push("/dashboard");
+        } else {
+          toast.error(loginData.message || "Erro ao fazer login após cadastro.");
+        }
+      }
+    } catch (error: any) {
+      console.error("Erro na autenticação:", error);
+      toast.error("Erro na conexão com o servidor.");
+    }
     setLoading(false);
-    onClose();
-    router.push("/dashboard");
   };
 
   return (
@@ -55,6 +108,8 @@ export function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                       type="text"
                       placeholder="Nome de usuário"
                       className="pl-10 glass border-0"
+                      value={nome}
+                      onChange={(e) => setNome(e.target.value)}
                       required
                     />
                   </div>
@@ -65,6 +120,8 @@ export function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                     type="email"
                     placeholder="Email"
                     className="pl-10 glass border-0"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
@@ -74,6 +131,8 @@ export function AuthModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                     type="password"
                     placeholder="Senha"
                     className="pl-10 glass border-0"
+                    value={senha}
+                    onChange={(e) => setSenha(e.target.value)}
                     required
                   />
                 </div>
