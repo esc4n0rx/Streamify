@@ -102,7 +102,7 @@ export function ProfileSelector({ onSelect }: ProfileSelectorProps) {
         },
         body: JSON.stringify({
           nome,
-          avatar: "default.png",
+          avatar: "/assets/perfil/default.png",
         }),
       });
 
@@ -113,7 +113,7 @@ export function ProfileSelector({ onSelect }: ProfileSelectorProps) {
       }
 
       toast.success("Perfil criado com sucesso!");
-      setPerfis((prev) => [...prev, data.perfil]); // Supondo retorno { perfil: {...} }
+      setPerfis((prev) => [...prev, data.perfil]);
     } catch (err) {
       console.error("Erro ao criar perfil:", err);
       toast.error("Erro ao criar perfil");
