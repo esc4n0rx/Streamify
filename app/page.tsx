@@ -54,7 +54,7 @@ export default function Home() {
               Streamify
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-gray-300">
-              A próxima geração da experiência de streaming
+              A próxima geração da experiência de streaming na sua mão
             </p>
             <div className="flex gap-4 justify-center">
               <Button
