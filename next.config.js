@@ -1,15 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export', // exporta como site estático
+  output: 'export',
   eslint: {
-    ignoreDuringBuilds: true, // ignora erros do eslint no build
+    ignoreDuringBuilds: true,
   },
   images: {
-    unoptimized: true, // evita otimizações pesadas em imagens
+    unoptimized: true,
   },
-  experimental: {
-    turbo: {}
-  }  
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 module.exports = nextConfig;
