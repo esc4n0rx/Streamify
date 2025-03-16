@@ -15,7 +15,9 @@ interface Perfil {
 
 interface ProfileSelectorProps {
   onSelect: (perfil: Perfil) => void;
+  user: { nome: string; url_avatar: string };
 }
+
 
 export function ProfileSelector({ onSelect }: ProfileSelectorProps) {
   const [perfis, setPerfis] = useState<Perfil[]>([]);
