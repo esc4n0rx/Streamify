@@ -1,10 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { PlayCircle } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
 
 const baseUrl = "https://api.streamhivex.icu";
 
@@ -16,6 +16,38 @@ interface ContentDetailModalProps {
 
 export function ContentDetailModal({ content, onClose, onPlay }: ContentDetailModalProps) {
   const [favorited, setFavorited] = useState(false);
+  const [description, setDescription] = useState(content.sinopse || content.descricao || "");
+
+  // Se a descrição estiver vazia ou for "Descrição Genérica", busca uma nova descrição via API de sinopse
+  useEffect(() => {
+    if (!description || description.trim() === "" || description === "Descrição Genérica") {
+      const fetchDescription = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const res = await fetch(
+            `${baseUrl}/api/sinopse?nome=${encodeURIComponent(content.nome)}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await res.json();
+          // Supondo que a resposta retorne a descrição em data.descricao
+          if (data.descricao) {
+            setDescription(data.descricao);
+          } else {
+            // Caso não retorne, mantém a descrição original ou um fallback
+            setDescription(content.nome);
+          }
+        } catch (error) {
+          console.error("Erro ao buscar descrição:", error);
+          setDescription(content.nome);
+        }
+      };
+      fetchDescription();
+    }
+  }, [content.nome, description]);
 
   const handleFavorite = async () => {
     try {
@@ -62,9 +94,7 @@ export function ContentDetailModal({ content, onClose, onPlay }: ContentDetailMo
             className="w-full h-48 object-cover rounded-md mb-4"
           />
           <h2 className="text-2xl font-bold text-white mb-2">{content.nome}</h2>
-          <p className="text-gray-300 mb-4">
-            {content.descricao || "Descrição do conteúdo (mockup)"}
-          </p>
+          <p className="text-gray-300 mb-4">{description}</p>
           {/* Mockup de estrelas */}
           <div className="flex items-center mb-4">
             <span className="text-yellow-400 mr-2">★★★★☆</span>
