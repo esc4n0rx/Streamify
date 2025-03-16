@@ -8,8 +8,8 @@ const nextConfig = {
     unoptimized: true, // evita otimizações pesadas em imagens
   },
   experimental: {
-    turbo: true, // ativa o novo sistema Turbo
-  },
+    turbo: {}
+  }  
 };
 
 module.exports = nextConfig;
