@@ -766,16 +766,15 @@ export default function Home() {
               </div>
               <p className="text-gray-400 mb-6">A próxima geração de entretenimento em streaming.</p>
               <div className="flex gap-4">
-                {["twitter", "facebook", "instagram", "youtube"].map((social) => (
-                  <a
-                    key={social}
-                    href="#"
-                    className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
-                  >
-                    <span className="sr-only">{social}</span>
-                    <div className="w-5 h-5 bg-gray-400 mask-image-[url('/icons/${social}.svg')]" />
-                  </a>
-                ))}
+              {["twitter", "facebook", "instagram", "youtube"].map((social) => {
+                  const iconClass = `w-5 h-5 bg-gray-400 mask-image-[url('/icons/${social}.svg')]`;
+                  return (
+                    <a key={social} href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+                      <span className="sr-only">{social}</span>
+                      <div className={iconClass} />
+                    </a>
+                  );
+                })}
               </div>
             </div>
 
