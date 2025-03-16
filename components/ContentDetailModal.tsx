@@ -1,10 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { PlayCircle } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
 
 const baseUrl = "https://api.streamhivex.icu";
 
@@ -16,6 +16,50 @@ interface ContentDetailModalProps {
 
 export function ContentDetailModal({ content, onClose, onPlay }: ContentDetailModalProps) {
   const [favorited, setFavorited] = useState(false);
+  const [description, setDescription] = useState("");
+
+  useEffect(() => {
+    const fetchDescription = async () => {
+      const initialDescription = content?.sinopse || content?.descricao || "";
+
+      // Verifica se precisa buscar nova descrição
+      if (
+        !initialDescription ||
+        initialDescription.trim() === "" ||
+        initialDescription === "Descrição Genérica" ||
+        initialDescription === "Descrição não fornecida"
+      ) {
+        try {
+          const token = localStorage.getItem("token");
+          const res = await fetch(
+            `${baseUrl}/api/sinopse?nome=${encodeURIComponent(content.nome)}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await res.json();
+
+          // Ajuste aqui — aceitar "sinopse" (correto do backend), e não "descricao"
+          const finalDescription =
+            data.sinopse && data.sinopse.trim() !== ""
+              ? data.sinopse
+              : content.nome;
+
+          setDescription(finalDescription);
+        } catch (error) {
+          console.error("Erro ao buscar descrição:", error);
+          setDescription(content.nome);
+        }
+      } else {
+        // Se já tem descrição válida, usa ela diretamente
+        setDescription(initialDescription);
+      }
+    };
+
+    fetchDescription();
+  }, [content.nome]);
 
   const handleFavorite = async () => {
     try {
@@ -62,14 +106,13 @@ export function ContentDetailModal({ content, onClose, onPlay }: ContentDetailMo
             className="w-full h-48 object-cover rounded-md mb-4"
           />
           <h2 className="text-2xl font-bold text-white mb-2">{content.nome}</h2>
-          <p className="text-gray-300 mb-4">
-            {content.descricao || "Descrição do conteúdo (mockup)"}
-          </p>
-          {/* Mockup de estrelas */}
+          <p className="text-gray-300 mb-4">{description}</p>
+
           <div className="flex items-center mb-4">
             <span className="text-yellow-400 mr-2">★★★★☆</span>
             <span className="text-gray-300">4.0</span>
           </div>
+
           <div className="flex gap-4">
             <Button
               onClick={() => onPlay(content)}
